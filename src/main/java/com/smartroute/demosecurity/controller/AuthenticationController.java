@@ -8,10 +8,7 @@ import com.smartroute.demosecurity.responses.LoginResponse;
 import com.smartroute.demosecurity.service.AuthenticationService;
 import com.smartroute.demosecurity.service.JwtService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/auth")
 @RestController
@@ -49,11 +46,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/resend")
-    public ResponseEntity<?> resendVerificationCode(@RequestBody String email){
+    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {
             authenticationService.resendVerificationCode(email);
-            return ResponseEntity.ok("Verification code resent");
-        } catch (RuntimeException e){
+            return ResponseEntity.ok("Verification code sent");
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
