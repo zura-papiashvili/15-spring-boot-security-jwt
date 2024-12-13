@@ -1,6 +1,5 @@
 package com.smartroute.demosecurity.service;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,38 +17,38 @@ import java.security.Key;
 
 @Service
 public class JwtService {
-@Value("${security.jwt.secret-key}")
-private String secretKey;
+    @Value("${security.jwt.secret-key}")
+    private String secretKey;
 
-@Value("${security.jwt.expiration-time}")
-private long jwtExpiration;
+    @Value("${security.jwt.expiration-time}")
+    private long jwtExpiration;
 
-public String extractUsername(String token){
-    return extractClaim(token, Claims::getSubject);
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
 
-}
-
-public <T> T extractClaim(String token, Function<Claims,T> clamesResolver) {
-    final Claims claims = extractAllClaims(token);
-    return clamesResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails){
+    public <T> T extractClaim(String token, Function<Claims, T> clamesResolver) {
+        final Claims claims = extractAllClaims(token);
+        return clamesResolver.apply(claims);
+    }
+
+    public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(HashMap<String, Object> extraClaims, UserDetails userDetails){
+    public String generateToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    public long getExpirationTime(){
+    public long getExpirationTime() {
         return jwtExpiration;
     }
 
     private String buildToken(
-            Map<String,  Object> extraClaims,
+            Map<String, Object> extraClaims,
             UserDetails userDetails,
-            long expirationTime){
+            long expirationTime) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
@@ -59,20 +58,20 @@ public <T> T extractClaim(String token, Function<Claims,T> clamesResolver) {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    private boolean isTokenExpired(String token){
+    private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token){
+    private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -81,7 +80,7 @@ public <T> T extractClaim(String token, Function<Claims,T> clamesResolver) {
                 .getBody();
     }
 
-    private Key getSignInKey(){
+    private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

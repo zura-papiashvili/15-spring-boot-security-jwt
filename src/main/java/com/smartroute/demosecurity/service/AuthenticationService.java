@@ -6,6 +6,8 @@ import com.smartroute.demosecurity.dto.VerifyUserDto;
 import com.smartroute.demosecurity.model.User;
 import com.smartroute.demosecurity.repository.UserRepository;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +18,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final UserRepository userRepository;
@@ -25,17 +28,6 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
-
-    public AuthenticationService(
-            UserRepository userRepository,
-            EmailService emailService,
-            PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.emailService = emailService;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-    }
 
     public User signup(RegisterUserDto input) {
         User user = new User(input.getUsername(), input.getEmail(), passwordEncoder.encode(input.getPassword()));
@@ -49,16 +41,14 @@ public class AuthenticationService {
     public User authenticate(LoginUserDto input) {
         User user = userRepository.findByEmail(input.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if(!user.isEnabled()){
+        if (!user.isEnabled()) {
             throw new RuntimeException("User not verified, please check your email");
         }
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getEmail(),
-                        input.getPassword()
-                )
-        );
+                        input.getPassword()));
 
         return user;
     }
