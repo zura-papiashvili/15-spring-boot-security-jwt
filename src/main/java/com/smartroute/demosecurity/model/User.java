@@ -2,6 +2,7 @@ package com.smartroute.demosecurity.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,38 +15,35 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
-public class User implements UserDetails{
+@RequiredArgsConstructor
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "username", unique = true,nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "email",nullable = false,unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password",nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-
-    @Column(name = "enabled",nullable = false)
+    @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
-    @Column(name="verification_code")
+    @Column(name = "verification_code")
     private String verificationCode;
 
-    @Column(name="verification_expiration")
+    @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
 
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
-    }
-
-    public User() {
     }
 
     @Override
